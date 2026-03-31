@@ -1,5 +1,9 @@
-import requests
+"""Client HTTP pour communiquer avec l'API BabyConnect."""
+
 import logging
+
+import requests
+
 from config import API_BASE_URL, MATCH_ID
 
 logger = logging.getLogger(__name__)
@@ -12,8 +16,8 @@ def get_current_score() -> tuple[int, int]:
         res.raise_for_status()
         match = res.json().get("match", {})
         return match.get("red_score", 0), match.get("blue_score", 0)
-    except Exception as e:
-        logger.error(f"Erreur récupération score: {e}")
+    except requests.exceptions.RequestException as e:
+        logger.error("Erreur récupération score: %s", e)
         return 0, 0
 
 
@@ -26,10 +30,10 @@ def update_score(red: int, blue: int) -> bool:
             timeout=3,
         )
         res.raise_for_status()
-        logger.info(f"Score mis à jour: Rouge {red} - Bleu {blue}")
+        logger.info("Score mis à jour: Rouge %s - Bleu %s", red, blue)
         return True
-    except Exception as e:
-        logger.error(f"Erreur mise à jour score: {e}")
+    except requests.exceptions.RequestException as e:
+        logger.error("Erreur mise à jour score: %s", e)
         return False
 
 
@@ -43,6 +47,6 @@ def finish_match() -> bool:
         res.raise_for_status()
         logger.info("Match terminé via API")
         return True
-    except Exception as e:
-        logger.error(f"Erreur fin de match: {e}")
+    except requests.exceptions.RequestException as e:
+        logger.error("Erreur fin de match: %s", e)
         return False

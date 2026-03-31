@@ -1,7 +1,11 @@
+"""Détection des buts par franchissement de ligne (produit vectoriel)."""
+
+import logging
+import time
+
 import cv2
 import numpy as np
-import time
-import logging
+
 from config import GOAL_LEFT, GOAL_RIGHT, WIN_SCORE
 
 logger = logging.getLogger(__name__)
@@ -77,12 +81,12 @@ class GoalDetector:
         if self._crosses_line(self._prev_position, ball_pos, GOAL_RIGHT):
             self.red_score += 1
             scorer = "red"
-            logger.info(f"BUT ROUGE ! Score: {self.red_score} - {self.blue_score}")
+            logger.info("BUT ROUGE ! Score: %s - %s", self.red_score, self.blue_score)
 
         elif self._crosses_line(self._prev_position, ball_pos, GOAL_LEFT):
             self.blue_score += 1
             scorer = "blue"
-            logger.info(f"BUT BLEU ! Score: {self.red_score} - {self.blue_score}")
+            logger.info("BUT BLEU ! Score: %s - %s", self.red_score, self.blue_score)
 
         if scorer:
             self._last_goal_time = now
@@ -114,7 +118,7 @@ class GoalDetector:
 
         # Score en haut au centre
         score_text = f"ROUGE {self.red_score}  -  {self.blue_score} BLEU"
-        h, w = frame.shape[:2]
+        _, w = frame.shape[:2]
         cv2.rectangle(frame, (w // 2 - 140, 5), (w // 2 + 140, 35), (0, 0, 0), -1)
         cv2.putText(frame, score_text, (w // 2 - 130, 27),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)

@@ -1,10 +1,14 @@
+"""Chargement de la configuration depuis les variables d'environnement."""
+
 import os
+
 from dotenv import load_dotenv
 
 load_dotenv()
 
 
 def parse_line(env_var: str, default: str) -> tuple[int, int, int, int]:
+    """Parse une variable d'env au format 'x1,y1,x2,y2' en tuple d'entiers."""
     raw = os.getenv(env_var, default)
     x1, y1, x2, y2 = map(int, raw.split(","))
     return x1, y1, x2, y2

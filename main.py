@@ -6,10 +6,11 @@ repère les franchissements de ligne de but, et envoie les scores
 automatiquement à l'API BabyConnect.
 """
 
-import cv2
 import logging
 import sys
 import time
+
+import cv2
 
 from config import CAMERA_SOURCE, DEBUG
 from tracker import BallTracker
@@ -25,11 +26,12 @@ logger = logging.getLogger(__name__)
 
 
 def main():
+    """Point d'entrée principal : capture vidéo, détection balle, arbitrage buts."""
     logger.info("Démarrage de ynov-baby-vision...")
 
     cap = cv2.VideoCapture(CAMERA_SOURCE)
     if not cap.isOpened():
-        logger.error(f"Impossible d'ouvrir la caméra/vidéo : {CAMERA_SOURCE}")
+        logger.error("Impossible d'ouvrir la caméra/vidéo : %s", CAMERA_SOURCE)
         sys.exit(1)
 
     tracker = BallTracker()
@@ -39,10 +41,10 @@ def main():
     red, blue = get_current_score()
     detector.red_score = red
     detector.blue_score = blue
-    logger.info(f"Score initial récupéré depuis l'API: Rouge {red} - Bleu {blue}")
+    logger.info("Score initial récupéré depuis l'API: Rouge %s - Bleu %s", red, blue)
 
     last_api_update = 0.0
-    API_UPDATE_INTERVAL = 1.0  # Envoie le score à l'API max 1 fois/seconde
+    api_update_interval = 1.0  # Envoie le score à l'API max 1 fois/seconde
 
     logger.info("Analyse vidéo en cours... (Appuie sur 'q' pour quitter)")
 
@@ -59,16 +61,16 @@ def main():
         scorer = detector.update(ball_pos)
 
         if scorer:
-            logger.info(f"BUT détecté par la caméra ! Equipe : {scorer.upper()}")
+            logger.info("BUT détecté par la caméra ! Equipe : %s", scorer.upper())
             now = time.time()
-            if now - last_api_update >= API_UPDATE_INTERVAL:
+            if now - last_api_update >= api_update_interval:
                 update_score(detector.red_score, detector.blue_score)
                 last_api_update = now
 
         # 3. Vérifier fin de match
         winner = detector.is_match_over()
         if winner:
-            logger.info(f"Match terminé ! Vainqueur : {winner.upper()}")
+            logger.info("Match terminé ! Vainqueur : %s", winner.upper())
             update_score(detector.red_score, detector.blue_score)
             finish_match()
             if DEBUG:

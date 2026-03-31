@@ -1,6 +1,9 @@
+"""Détection et tracking de la balle de babyfoot avec YOLOv8."""
+
 import cv2
 import numpy as np
 from ultralytics import YOLO
+
 from config import YOLO_MODEL, CONFIDENCE_THRESHOLD
 
 # ID de classe "sports ball" dans COCO dataset (utilisé par YOLOv8 de base)
